@@ -15,8 +15,8 @@
 
 #define MAXLENGTH 300
 
-#define HIGH 3
-#define MIDDLE 2
-#define LOW 1
+#define HIGH 2
+#define MIDDLE 1
+#define LOW 0
 
 #endif // CONST_H

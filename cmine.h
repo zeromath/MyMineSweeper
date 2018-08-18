@@ -7,10 +7,15 @@
 #include <QLabel>
 #include <QTimer>
 #include "mylabel.h"
+#include "mylabel2.h"
+#include "mylabel3.h"
 #include "mylabelex.h"
 #include "const.h"
+#include "crecord.h"
 #include "cmap.h"
 #include "mydlg.h"
+#include "mydlg2.h"
+#include "mydlg3.h"
 
 
 namespace Ui {
@@ -41,6 +46,7 @@ signals:
     void Successed();
 
 private:
+    int getType();
     void unCover(int x,int y);
     void start();
     void clear();
@@ -51,22 +57,25 @@ private:
 
     Ui::CMine *ui;
     MyLabel* mylabel[HEIGHT-2][WIDTH-2];
-    QMessageBox* mbox;
+    //QMessageBox* mbox;
     QGridLayout* m_layout;
     QFont* m_qft;
     MyLabelEx *label_mine;
     MyLabelEx *label_time;
     MyDlg* dialog_mydlg;
+    MyDlg2* dialog_mydlg2;
+    MyDlg3* dialog_mydlg3;
     QLabel *label_minesum;
-    QLabel *label_timenum;
-    QPixmap* pixmap_mine;
-    QPixmap* pixmap_time;
+    MyLabel3 *label_timenum;
     QTimer* qtimer;
     //QMutex* qmtx;
+    MyLabel2* mylabel2;
 
 
+    CRecord* m_record;
     CMap* m_cmap;
 
+    QString* m_name;
     bool m_start;
     int m_height;
     int m_width;

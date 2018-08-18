@@ -16,7 +16,11 @@ SOURCES += main.cpp\
     cmap.cpp \
     mylabelex.cpp \
     mydlg.cpp \
-    crecord.cpp
+    crecord.cpp \
+    mylabel2.cpp \
+    mydlg2.cpp \
+    mylabel3.cpp \
+    mydlg3.cpp
 
 HEADERS  += cmine.h \
     const.h \
@@ -24,7 +28,11 @@ HEADERS  += cmine.h \
     cmap.h \
     mylabelex.h \
     mydlg.h \
-    crecord.h
+    crecord.h \
+    mylabel2.h \
+    mydlg2.h \
+    mylabel3.h \
+    mydlg3.h
 
 RESOURCES = image.qrc
 	

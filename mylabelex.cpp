@@ -2,7 +2,7 @@
 
 MyLabelEx::MyLabelEx()
 {
-    setFixedSize(26,26);
+    setFixedSize(36,36);
 }
 
 void MyLabelEx::mouseDoubleClickEvent(QMouseEvent *event){

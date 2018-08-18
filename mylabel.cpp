@@ -4,7 +4,6 @@ MyLabel::MyLabel(int x,int y)
 {
     m_x=x;
     m_y=y;
-    this->setAlignment(Qt::AlignCenter);
     this->setFixedSize(18,18);
     this->setFrameStyle(6);
 
@@ -18,7 +17,7 @@ MyLabel::MyLabel(int x,int y)
     pixmap[6] = new QPixmap(":/images/6.png");
     pixmap[7] = new QPixmap(":/images/7.png");
     pixmap[8] = new QPixmap(":/images/8.png");
-    pixmap[9] = new QPixmap(":/images/mine.png");
+    pixmap[9] = new QPixmap(":/images/mine1.png");
     pixmap[10] = new QPixmap(":/images/covered.png");
     pixmap[11] = new QPixmap(":/images/flag.png");
 }

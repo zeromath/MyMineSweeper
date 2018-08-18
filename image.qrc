@@ -11,8 +11,14 @@
 	<file>images/blank.png</file>
 	<file>images/covered.png</file>
 	<file>images/flag.png</file>
-	<file>images/mine.png</file>
-	<file>images/label_time.png</file>
+	<file>images/mine1.png</file>
+	<file>images/mine2.png</file>
+	<file>images/mine3.png</file>
+	<file>images/label_time1.png</file>
+	<file>images/label_time2.png</file>
+	<file>images/label_time3.png</file>
+	<file>images/label_time4.png</file>
+	<file>images/label_time5.png</file>	
 	<file>images/label_mine.png</file>
 </qresource>
 </RCC>

@@ -3,16 +3,18 @@
 
 
 void CMine::init(){
+    label_timenum->setType(this->getType());
 
-    m_layout->addWidget(label_mine,0,0,2,2);
-    m_layout->addWidget(label_minesum,0,2,2,2);
-    m_layout->addWidget(label_time,0,m_width-2,2,2);
-    m_layout->addWidget(label_timenum,0,m_width-4,2,2);
+    m_layout->addWidget(label_mine,0,m_width-2,2,2);
+    m_layout->addWidget(label_minesum,2,m_width-2,2,2);
+    m_layout->addWidget(label_time,0,0,2,2);
+    m_layout->addWidget(label_timenum,2,0,2,2);
+    m_layout->addWidget(mylabel2,0,2,4,m_width-4);
 
     for (int i=0;i<m_height;i++)
         for (int j=0;j<m_width;j++){
             mylabel[i][j]->setCovered();
-            m_layout->addWidget(mylabel[i][j],i+2,j);
+            m_layout->addWidget(mylabel[i][j],i+4,j);
         }
 
     m_layout->setSpacing(0);
@@ -33,25 +35,45 @@ CMine::CMine(QWidget *parent) :
     m_time=0;
 
 
+    m_cmap=new CMap(m_height,m_width,m_mine);
+    m_record=new CRecord();
+
     m_layout=new QGridLayout(this);
 
-    mbox=new QMessageBox();
+   // mbox=new QMessageBox();
     dialog_mydlg=new MyDlg();
-    m_cmap=new CMap(m_height,m_width,m_mine);
+    dialog_mydlg2=new MyDlg2();
+    dialog_mydlg3=new MyDlg3(m_record);
+
+
+
 
     //qmtx=new QMutex(QMutex::Recursive);
 
-    label_mine=new MyLabelEx();
-    label_minesum=new QLabel(); label_minesum->setFixedSize(26,26);
-    label_time=new MyLabelEx();
-    label_timenum=new QLabel(); label_timenum->setFixedSize(26,26);
-
-    pixmap_mine=new QPixmap(":/images/label_mine.png");
-    label_mine->setPixmap(*pixmap_mine);
-    pixmap_time=new QPixmap(":/images/label_time.png");
-    label_time->setPixmap(*pixmap_time);
-
     m_qft=new QFont("Harrington", 15, QFont::Bold);
+
+    m_name=new QString(QObject::tr("JZ"));
+    mylabel2=new MyLabel2(*m_name);
+    mylabel2->setFont(*m_qft);
+
+    label_minesum=new QLabel();
+    label_minesum->setFixedSize(36,36);
+    label_minesum->setAlignment(Qt::AlignLeft);
+
+    label_timenum=new MyLabel3();
+    label_timenum->setType(LOW);
+    label_timenum->setFixedSize(36,36);
+    label_timenum->setAlignment(Qt::AlignRight);
+
+    label_mine=new MyLabelEx();
+    label_mine->setAlignment(Qt::AlignRight);
+    label_mine->setPixmap(QPixmap(":/images/label_mine.png"));
+
+    label_time=new MyLabelEx();
+    label_time->setAlignment(Qt::AlignLeft);
+    label_time->setPixmap(QPixmap(":/images/label_time1.png"));
+
+
     label_minesum->setFont(*m_qft);
     label_minesum->setText(QString("%1").arg(m_mine));
     label_timenum->setFont(*m_qft);
@@ -74,12 +96,15 @@ CMine::CMine(QWidget *parent) :
     connect(label_mine,SIGNAL(sClicked()),dialog_mydlg,SLOT(exec()));
     connect(label_time,SIGNAL(sClicked()),this,SLOT(restart()));
     connect(dialog_mydlg,SIGNAL(setNew(int,int,int)),this,SLOT(setNew(int,int,int)));
+    connect(mylabel2,SIGNAL(getName()),dialog_mydlg2,SLOT(exec()));
+    connect(dialog_mydlg2,SIGNAL(getName(QString)),mylabel2,SLOT(ChangeName(QString)));
+    connect(label_timenum,SIGNAL(Show(int)),dialog_mydlg3,SLOT(Show(int)));
 
     init();
 
     ui->centralWidget->setLayout(m_layout);
-    ui->centralWidget->setFixedSize(m_width*18,m_height*18+26);
-    setFixedSize(m_width*18,m_height*18+26);
+    ui->centralWidget->setFixedSize(m_width*18,m_height*18+72);
+    setFixedSize(m_width*18,m_height*18+80);
     ui->centralWidget->show();
 
 }
@@ -91,27 +116,36 @@ CMine::~CMine()
             delete mylabel[i][j];
     delete m_cmap;
     delete m_layout;
-    delete mbox;
+    delete m_record;
+   // delete mbox;
     delete ui;
 }
 
 void CMine::failed(){
     qtimer->stop();
-    mbox->setText("you falied");
-    mbox->exec();
-    clear();
+    label_time->clear();
+    label_time->setPixmap(QPixmap(":/images/label_time1.png"));
+    mylabel2->Failed();
+    for (int i=0;i<this->m_height;i++)
+        for (int j=0;j<this->m_width;j++)
+            if (m_cmap->getValue(i,j)==MINE && m_cmap->getCovered(i,j)==COVERED) unCover(i,j);
+            else m_cmap->setCovered(i,j,WRONG);
+    //clear();
 }
 
 void CMine::restart(){
+    mylabel2->Refresh();
     qtimer->stop();
     clear();
 }
 
 void CMine::setNew(int height,int width,int mine){
+
     m_layout->removeWidget(label_mine);
     m_layout->removeWidget(label_minesum);
     m_layout->removeWidget(label_time);
     m_layout->removeWidget(label_timenum);
+    m_layout->removeWidget(mylabel2);
 
     for (int i=0;i<m_height;i++)
         for (int j=0;j<m_width;j++)
@@ -124,8 +158,8 @@ void CMine::setNew(int height,int width,int mine){
 
     init();
 
-    ui->centralWidget->setFixedSize(m_width*18,m_height*18+26);
-    setFixedSize(m_width*18,m_height*18+26);
+    ui->centralWidget->setFixedSize(m_width*18,m_height*18+72);
+    setFixedSize(m_width*18,m_height*18+80);
 
     ui->centralWidget->update();
     ui->centralWidget->repaint();
@@ -136,9 +170,10 @@ void CMine::setNew(int height,int width,int mine){
 
 void CMine::success(){
     qtimer->stop();
-    mbox->setText("you win!!!");
-    mbox->exec();
-    clear();
+    label_time->clear();
+    label_time->setPixmap(QPixmap(":/images/label_time1.png"));
+    m_record->addNewScore(m_time,getType(),mylabel2->Name());
+    mylabel2->Successed();
 }
 //no change size
 void CMine::clear(){
@@ -166,7 +201,7 @@ void CMine::unCover(const int x,const int y){
 void CMine::SearchLeft(int x, int y){
     //qmtx->tryLock();
     //qmtx->lock();
-    if (m_cmap->getCovered(x,y)==FLAG) return;
+    if (m_cmap->getCovered(x,y)==FLAG || m_cmap->getCovered(x,y)==WRONG) return;
     if (m_cmap->getValue(x,y)==MINE){
         unCover(x,y);
         //qmtx->unlock();
@@ -185,7 +220,7 @@ void CMine::SearchLeft(int x, int y){
 
 void CMine::Search(int x, int y)
 {
-    if (m_cmap->getCovered(x,y)==FLAG) return;
+    if (m_cmap->getCovered(x,y)==FLAG || m_cmap->getCovered(x,y)==WRONG) return;
     int m[]={0,-1,1,0,0,-1,-1,1,1};
     int n[]={0,0,0,-1,1,-1,1,-1,1};
     int h=0,t=1,i,xx;
@@ -232,7 +267,7 @@ void CMine::SearchRight(int x, int y)
 {
     //qmtx->tryLock();
     //qmtx->lock();
-    if (m_cmap->getCovered(x,y)==OPEN) return;
+    if (m_cmap->getCovered(x,y)==OPEN || m_cmap->getCovered(x,y)==WRONG) return;
     if (m_cmap->getCovered(x,y)==FLAG){
         mylabel[x][y]->setCovered();
         m_cmap->setCovered(x,y,COVERED);
@@ -257,6 +292,7 @@ void CMine::SearchDouble(int x, int y)
 {
     //qmtx->tryLock();
     //qmtx->lock();
+    if (m_cmap->getCovered(x,y)==FLAG || m_cmap->getCovered(x,y)==WRONG) return;
     int m[]={0,-1,1,0,0,-1,-1,1,1};
     int n[]={0,0,0,-1,1,-1,1,-1,1};
     int i,g;
@@ -297,5 +333,19 @@ void CMine::initTime(){
 
 void CMine::addtime(){
     m_time++;
+    label_time->clear();
+    switch(m_time%5){
+    case 0: label_time->setPixmap(QPixmap(":/images/label_time1.png")); break;
+    case 1: label_time->setPixmap(QPixmap(":/images/label_time2.png")); break;
+    case 2: label_time->setPixmap(QPixmap(":/images/label_time3.png")); break;
+    case 3: label_time->setPixmap(QPixmap(":/images/label_time4.png")); break;
+    case 4: label_time->setPixmap(QPixmap(":/images/label_time5.png")); break;
+}
     label_timenum->setText(QString("%1").arg(m_time));
+}
+
+int CMine::getType(){
+    if (m_width==9) return LOW;
+    if (m_width==16) return MIDDLE;
+    return HIGH;
 }

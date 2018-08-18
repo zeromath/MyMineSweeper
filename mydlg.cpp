@@ -37,6 +37,7 @@ void MyDlg::dlgexe(int height,int width,int mine){
 }
 
 int MyDlg::exec(){
+    this->setModal(true);
     show();
     return 0;
 }
