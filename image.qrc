@@ -1,24 +1,24 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>images/1.png</file>
-    <file>images/2.png</file>
-    <file>images/3.png</file>
-    <file>images/4.png</file>
-    <file>images/5.png</file>
-    <file>images/6.png</file>
-    <file>images/7.png</file>
-    <file>images/8.png</file>
-	<file>images/blank.png</file>
-	<file>images/covered.png</file>
-	<file>images/flag.png</file>
-	<file>images/mine1.png</file>
-	<file>images/mine2.png</file>
-	<file>images/mine3.png</file>
-	<file>images/label_time1.png</file>
-	<file>images/label_time2.png</file>
-	<file>images/label_time3.png</file>
-	<file>images/label_time4.png</file>
-	<file>images/label_time5.png</file>	
-	<file>images/label_mine.png</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>images/1.png</file>
+        <file>images/2.png</file>
+        <file>images/3.png</file>
+        <file>images/4.png</file>
+        <file>images/5.png</file>
+        <file>images/6.png</file>
+        <file>images/7.png</file>
+        <file>images/8.png</file>
+        <file>images/blank.png</file>
+        <file>images/covered.png</file>
+        <file>images/flag.png</file>
+        <file>images/mine1.png</file>
+        <file>images/mine2.png</file>
+        <file>images/mine3.png</file>
+        <file>images/label_time1.png</file>
+        <file>images/label_time2.png</file>
+        <file>images/label_time3.png</file>
+        <file>images/label_time4.png</file>
+        <file>images/label_time5.png</file>
+        <file>images/label_mine.png</file>
+    </qresource>
 </RCC>

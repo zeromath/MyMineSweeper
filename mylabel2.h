@@ -10,6 +10,7 @@ class MyLabel2:public QLabel
 
 public:
     MyLabel2(QString name);
+    ~MyLabel2();
 
     void Failed();
     void Successed();

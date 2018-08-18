@@ -12,6 +12,7 @@ class MyDlg:public QDialog
 
 public:
     MyDlg();
+    ~MyDlg();
 
 signals:
     void setNew(int height,int width,int sum);

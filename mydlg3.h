@@ -12,6 +12,7 @@ class MyDlg3:public QDialog
 
 public:
     MyDlg3(CRecord* crd);
+    ~MyDlg3();
 
 public slots:
     void Show(int type);

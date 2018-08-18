@@ -1,5 +1,9 @@
 #include "mylabel2.h"
 
+MyLabel2::~MyLabel2(){
+    delete name;
+}
+
 MyLabel2::MyLabel2(QString name)
 {
     this->name=new QString(name);

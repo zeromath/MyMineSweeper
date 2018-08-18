@@ -19,4 +19,5 @@
 #define MIDDLE 1
 #define LOW 0
 
+#define ENDL '\n'
 #endif // CONST_H

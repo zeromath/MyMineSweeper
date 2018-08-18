@@ -40,3 +40,16 @@ void MyDlg3::Show(int type){
     this->setModal(true);
     this->show();
 }
+
+MyDlg3::~MyDlg3(){
+    for (int i=0;i<5;i++)
+        for (int j=0;j<3;j++)
+            delete data[i][j];
+    delete title;
+    delete number;
+    delete name;
+    delete score;
+    delete yes;
+    delete layout;
+
+}

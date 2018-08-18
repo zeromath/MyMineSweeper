@@ -6,46 +6,31 @@ MyLabel::MyLabel(int x,int y)
     m_y=y;
     this->setFixedSize(18,18);
     this->setFrameStyle(6);
-
-    pixmap = new QPixmap*[12];
-    pixmap[0] = new QPixmap(":/images/blank.png");
-    pixmap[1] = new QPixmap(":/images/1.png");
-    pixmap[2] = new QPixmap(":/images/2.png");
-    pixmap[3] = new QPixmap(":/images/3.png");
-    pixmap[4] = new QPixmap(":/images/4.png");
-    pixmap[5] = new QPixmap(":/images/5.png");
-    pixmap[6] = new QPixmap(":/images/6.png");
-    pixmap[7] = new QPixmap(":/images/7.png");
-    pixmap[8] = new QPixmap(":/images/8.png");
-    pixmap[9] = new QPixmap(":/images/mine1.png");
-    pixmap[10] = new QPixmap(":/images/covered.png");
-    pixmap[11] = new QPixmap(":/images/flag.png");
 }
 
 MyLabel::~MyLabel(){
-    delete [] pixmap;
 }
 
 void MyLabel::setCovered(){
-    setPixmap(*pixmap[10]);
+    setPixmap(QPixmap(":/images/covered.png"));
 }
 
 void MyLabel::setFlag(){
-    setPixmap(*pixmap[11]);
+    setPixmap(QPixmap(":/images/flag.png"));
 }
 
 void MyLabel::setValue(int value){
     switch(value){
-    case MINE:   setPixmap(*pixmap[9]); break;
-    case BLANK:  setPixmap(*pixmap[0]); break;
-    case 1:      setPixmap(*pixmap[1]); break;
-    case 2:      setPixmap(*pixmap[2]); break;
-    case 3:      setPixmap(*pixmap[3]); break;
-    case 4:      setPixmap(*pixmap[4]); break;
-    case 5:      setPixmap(*pixmap[5]); break;
-    case 6:      setPixmap(*pixmap[6]); break;
-    case 7:      setPixmap(*pixmap[7]); break;
-    case 8:      setPixmap(*pixmap[8]); break;
+    case MINE:   setPixmap(QPixmap(":/images/mine1.png")); break;
+    case BLANK:  setPixmap(QPixmap(":/images/blank.png")); break;
+    case 1:      setPixmap(QPixmap(":/images/1.png")); break;
+    case 2:      setPixmap(QPixmap(":/images/2.png")); break;
+    case 3:      setPixmap(QPixmap(":/images/3.png")); break;
+    case 4:      setPixmap(QPixmap(":/images/4.png")); break;
+    case 5:      setPixmap(QPixmap(":/images/5.png")); break;
+    case 6:      setPixmap(QPixmap(":/images/6.png")); break;
+    case 7:      setPixmap(QPixmap(":/images/7.png")); break;
+    case 8:      setPixmap(QPixmap(":/images/8.png")); break;
     }
 }
 

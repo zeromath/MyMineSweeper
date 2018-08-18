@@ -1,10 +1,9 @@
 #ifndef CRECORD_H
 #define CRECORD_H
-#include <string>
 #include <QString>
 #include <QFile>
 #include "const.h"
-using namespace std;
+#include <QTextStream>
 
 class CRecord
 {
@@ -19,8 +18,9 @@ public:
 private:
     //your code
     int grade[3][6];
-    string names[3][6];
+    QString names[3][6];
     int type;
+    QFile* file;
 };
 
 #endif // CRECORD_H

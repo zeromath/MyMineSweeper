@@ -30,3 +30,9 @@ show();
 return 0;
 }
 
+MyDlg2::~MyDlg2(){
+    delete name;
+    delete yes;
+    delete tips;
+    delete layout;
+}

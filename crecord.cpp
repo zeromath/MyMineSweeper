@@ -1,48 +1,57 @@
 #include "crecord.h"
-#include<fstream>
-#include<iostream>
-#include <stdlib.h>
-#include<string>
 
 using namespace std;
+
 CRecord::CRecord()
 {
+    file=new QFile("record");
+    if (!file->exists()){
+        for (int i=0;i<3;i++)
+            for (int j=0;j<5;j++){
+                grade[i][j]=999;
+                names[i][j]=QString("NULL");
+            }
+    }else{
       int i,j;
-      ifstream fin;
-      fin.open("record");
-      for (i=0;i<=2;i++)
-      {
-          fin>>type;
+      file->open(QFile::ReadOnly);
+      QTextStream stream(file);
+      QString line;
+      for (i=0;i<3;i++){
+          line = stream.readLine();
+          type = line.toInt();
           for (j=0;j<=4;j++)
           {
-             fin>>grade[type][j]>>names[type][j];
+              line = stream.readLine();
+              grade[type][j]=line.toInt();
+              names[type][j] = stream.readLine();
           }
       }
-      fin.close();
-      QFile::remove("record");
+      file->close();
+      file->remove();
+  }
 }
 CRecord::~CRecord()
 {
       int i,j;
-      //system("del /q  C:\\Qt\\2010.05\\qt\\MyMineSweeper-build-desktop\\debug\\record");//DOS
-      ofstream fout;
-      fout.open("record");
+      file->open(QFile::WriteOnly);
+      QTextStream stream(file);
       for (i=0;i<=2;i++)
       {
-          fout<<i<<endl;
+          stream<<i<<ENDL;
           for (j=0;j<=4;j++)
           {
-            fout<<grade[i][j]<<endl;
-            fout<<names[i][j]<<endl;
+            stream<<grade[i][j]<<ENDL;
+            stream<<names[i][j]<<ENDL;
           }
       }
-      fout.close();
+      file->close();
+      delete file;
 }
-void CRecord::addNewScore(int time,int type,QString pname)
+void CRecord::addNewScore(int time,int type,QString name)
 {
-     string name=string(pname.toStdString());
+     //string name=string(pname.toStdString());
      int t,i;
-     string n;
+     QString n;
      grade[type][5]=time;
      names[type][5]=name;
      for (i=4;i>=0;i--)
@@ -68,8 +77,5 @@ int CRecord::getScore(int index,int type)
 }
 
 QString CRecord::getName(int index,int type){
-    QString* s;
-    if (index<=4) s=new QString(names[type][index].c_str());
-    else s=new QString("NULL");
-    return *s;
+    return (index<=4)?(names[type][index]):(QString("NULL"));
 }

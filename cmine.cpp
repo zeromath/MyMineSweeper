@@ -27,9 +27,11 @@ CMine::CMine(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
     m_mine = 10;
     m_height = 9;
     m_width = 9;
+    m_k=0;
     nflag=0;
     nopen=0;
     m_time=0;
@@ -80,6 +82,7 @@ CMine::CMine(QWidget *parent) :
     label_timenum->setText(QString("%1").arg(m_time));
 
     qtimer = new QTimer();
+    //qsound = new QSound(":/sounds/explosion.wav");
 
     for (int i=0; i<HEIGHT-2; i++)
         for (int j=0; j<WIDTH-2; j++)
@@ -104,25 +107,39 @@ CMine::CMine(QWidget *parent) :
 
     ui->centralWidget->setLayout(m_layout);
     ui->centralWidget->setFixedSize(m_width*18,m_height*18+72);
-    setFixedSize(m_width*18,m_height*18+80);
+    setFixedSize(m_width*18,m_height*18+90);
     ui->centralWidget->show();
 
 }
 
 CMine::~CMine()
 {
-    for (int i=m_height-1; i>=0; i--)
-        for (int j=m_width-1; j>=0; j--)
-            delete mylabel[i][j];
-    delete m_cmap;
     delete m_layout;
+    delete m_qft;
+    delete label_mine;
+    delete label_time;
+    delete dialog_mydlg;
+    delete dialog_mydlg2;
+    delete dialog_mydlg3;
+    delete label_minesum;
+    delete label_timenum;
+    delete qtimer;
+    delete mylabel2;
     delete m_record;
-   // delete mbox;
+    delete m_cmap;
+    delete m_name;
+    //delete qsound;
+
+    for (int i=0; i<HEIGHT-2; i++)
+        for (int j=0; j<WIDTH-2; j++)
+            delete mylabel[i][j];
+
     delete ui;
 }
 
 void CMine::failed(){
     qtimer->stop();
+    //qsound->play();
     label_time->clear();
     label_time->setPixmap(QPixmap(":/images/label_time1.png"));
     mylabel2->Failed();
@@ -159,7 +176,7 @@ void CMine::setNew(int height,int width,int mine){
     init();
 
     ui->centralWidget->setFixedSize(m_width*18,m_height*18+72);
-    setFixedSize(m_width*18,m_height*18+80);
+    setFixedSize(m_width*18,m_height*18+90);
 
     ui->centralWidget->update();
     ui->centralWidget->repaint();
@@ -172,6 +189,10 @@ void CMine::success(){
     qtimer->stop();
     label_time->clear();
     label_time->setPixmap(QPixmap(":/images/label_time1.png"));
+    for (int i=0;i<this->m_height;i++)
+        for (int j=0;j<this->m_width;j++)
+            m_cmap->setCovered(i,j,WRONG);
+
     m_record->addNewScore(m_time,getType(),mylabel2->Name());
     mylabel2->Successed();
 }
@@ -348,4 +369,23 @@ int CMine::getType(){
     if (m_width==9) return LOW;
     if (m_width==16) return MIDDLE;
     return HIGH;
+}
+
+void CMine::keyPressEvent ( QKeyEvent * event ){
+    switch(event->key()){
+    case Qt::Key_R:  m_k=0; break;
+    case Qt::Key_S: if (m_k==0) m_k++; break;
+    case Qt::Key_H: if (m_k==1) m_k++; break;
+    case Qt::Key_U: if (m_k==2) m_k++;
+                    if (m_k==4) m_k++; break;
+    case Qt::Key_X: if (m_k==3) m_k++; break;
+
+    case Qt::Key_E: if (m_k==5){
+            m_k=0;
+            for (int i=0;i<m_height;i++)
+                for (int j=0;j<m_width;j++)
+                    if (m_cmap->getValue(i,j)==MINE && m_cmap->getCovered(i,j)!=FLAG)
+                        this->SearchRight(i,j);
+        }break;
+    }
 }

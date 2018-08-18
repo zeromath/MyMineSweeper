@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QTimer>
+//#include <QSound>
 #include "mylabel.h"
 #include "mylabel2.h"
 #include "mylabel3.h"
@@ -40,6 +41,8 @@ public slots:
     void restart();
     void setNew(int height,int width,int mine);
 
+protected:
+     virtual void keyPressEvent ( QKeyEvent * event );
    // void DoubleClicked(int x,int y);
 signals:
     void Failed();
@@ -68,6 +71,7 @@ private:
     QLabel *label_minesum;
     MyLabel3 *label_timenum;
     QTimer* qtimer;
+    //QSound* qsound;
     //QMutex* qmtx;
     MyLabel2* mylabel2;
 
@@ -83,6 +87,7 @@ private:
     int m_time;
     int nflag;
     int nopen;
+    int m_k;
 };
 
 #endif // CMINE_H

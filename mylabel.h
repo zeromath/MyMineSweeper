@@ -28,8 +28,6 @@ protected:
 private:
     int m_x;
     int m_y;
-    QPixmap **pixmap;
-
 };
 
 #endif // MYLABEL_H

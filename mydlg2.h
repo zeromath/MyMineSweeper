@@ -12,6 +12,7 @@ class MyDlg2:public QDialog
     Q_OBJECT
 public:
     MyDlg2();
+    ~MyDlg2();
 
 signals:
     void getName(QString name);

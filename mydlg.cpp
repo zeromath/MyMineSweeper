@@ -17,6 +17,13 @@ MyDlg::MyDlg()
     connect(this,SIGNAL(newdata(int,int,int)),this,SLOT(dlgexe(int,int,int)));
 }
 
+MyDlg::~MyDlg(){
+    delete button_high;
+    delete button_mid;
+    delete button_low;
+    delete layout;
+};
+
 
 void MyDlg::collectdata_mid(){
     emit newdata(16,16,40);
