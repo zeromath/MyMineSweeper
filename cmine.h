@@ -5,10 +5,10 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QLabel>
-#include "mybutton.h"
 #include "mylabel.h"
 #include "const.h"
 #include "cmap.h"
+#include <QMutex>
 
 namespace Ui {
     class CMine;
@@ -26,23 +26,26 @@ public slots:
     void SearchLeft(int x, int y);
     void SearchRight(int x, int y);
     void SearchDouble(int x, int y);
+    void failed();
 
    // void DoubleClicked(int x,int y);
-
+signals:
+    void Failed();
 
 private:
     void unCover(int x,int y);
-//    void setFlag(int x,int y);
-    void init(int height,int width,int mine,QGridLayout* layout);
     void start();
-    void failed();
     void clear();
+    void Search(int x, int y);
 
     Ui::CMine *ui;
-    MyButton* mybutton[HEIGHT][WIDTH];
-    MyLabel* mylabel[HEIGHT][WIDTH];
+    MyLabel* mylabel[HEIGHT-2][WIDTH-2];
     QMessageBox* mbox;
     QGridLayout* m_layout;
+    QFont* m_qft;
+    QLabel* label_mine;
+    QMutex* qmtx;
+
 
     CMap* m_cmap;
 

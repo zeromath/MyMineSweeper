@@ -12,12 +12,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         cmine.cpp \
-    mybutton.cpp \
     mylabel.cpp \
     cmap.cpp
 
 HEADERS  += cmine.h \
-    mybutton.h \
     const.h \
     mylabel.h \
     cmap.h

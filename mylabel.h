@@ -11,17 +11,24 @@ class MyLabel:public QLabel
 
 public:
     MyLabel(int x=0,int y=0);
+    ~MyLabel();
     void setValue(int value);
+    void setCovered();
+    void setFlag();
 
 signals:
     void sDoubleClicked(int x,int y);
+    void sLeftClicked(int x,int y);
+    void sRightClicked(int x,int y);
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
 private:
     int m_x;
     int m_y;
+    QPixmap **pixmap;
 
 };
 

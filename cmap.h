@@ -14,23 +14,21 @@ private:
         int m_nWidth;
         int m_nHeight;
         void fillZero();
-        void setBomb(int,int);
-        void init(int,int,int);
+        void setBomb(const int,const int);
+        void init(const int,const int,const int);
 
 public:
         CMap();
-        CMap(int,int,int);
+        CMap(const int,const int,const int);
         ~CMap();
 
         //get function
-        int getValue(int x,int y);
-        int getCovered(int x,int y);
-        int getWidth();
-        int getHeight();
+        int getValue(const int x,const int y);
+        int getCovered(const int x,const int y);
 
         //set function
-        bool setValue(int x,int y,int value);
-        bool setCovered(int x,int y,int covered);
+        bool setValue(const int x,const int y,const int value);
+        bool setCovered(const int x,const int y,const int covered);
 
         //set new
         void getNew(int,int,int);

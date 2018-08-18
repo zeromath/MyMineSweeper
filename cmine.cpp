@@ -8,49 +8,51 @@ CMine::CMine(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_cmap=new CMap(HEIGHT-2,WIDTH-2,99);
+    m_mine = 99;
+    m_height = HEIGHT-2;
+    m_width = WIDTH-2;
 
     m_layout=new QGridLayout();
     m_layout->setSpacing(0);
 
     mbox=new QMessageBox();
+    m_cmap=new CMap(m_height,m_width,m_mine);
 
-    init(16,30,99,m_layout);
+    qmtx=new QMutex(QMutex::Recursive);
 
-}
+    label_mine=new QLabel();
+    label_mine->setText(QString("the sum of mine is %1").arg(m_mine));
 
+    m_qft=new QFont("Times", 10, QFont::Bold);
 
-void CMine::init(int height,int width,int mine,QGridLayout* layout){
-    m_mine = mine;
-    m_height = height;
-    m_width = width;
+    m_layout->addWidget(label_mine,0,0,1,10);
+
     for (int i=0; i<m_height; i++)
         for (int j=0; j<m_width; j++)
         {
             mylabel[i][j]=new MyLabel(i,j);
-            mybutton[i][j]=new MyButton(i,j,this);
-            connect(mybutton[i][j],SIGNAL(sLeftClicked(int,int)),this,SLOT(SearchLeft(int,int)));
-            connect(mybutton[i][j],SIGNAL(sRightClicked(int,int)),this,SLOT(SearchRight(int,int)));
+            mylabel[i][j]->setCovered();
+            mylabel[i][j]->setFont(*m_qft);
+            connect(mylabel[i][j],SIGNAL(sLeftClicked(int,int)),this,SLOT(SearchLeft(int,int)));
+            connect(mylabel[i][j],SIGNAL(sRightClicked(int,int)),this,SLOT(SearchRight(int,int)));
             connect(mylabel[i][j],SIGNAL(sDoubleClicked(int,int)),this,SLOT(SearchDouble(int,int)));
-            layout->addWidget(mylabel[i][j],i+1,j);
-            layout->addWidget(mybutton[i][j],i+1,j);
+            m_layout->addWidget(mylabel[i][j],i+1,j);
         }
-    start();
 
+    connect(this,SIGNAL(Failed()),this,SLOT(failed()));
     ui->centralWidget->setLayout(m_layout);
     ui->centralWidget->show();
-}
 
-void CMine::start(){
-    m_cmap->getNew(m_height,m_width,m_mine);
-
-    for (int i=0;i<m_height;i++)
-        for (int j=0;j<m_width;j++)
-            mylabel[i][j]->setValue(m_cmap->getValue(i,j));
 }
 
 CMine::~CMine()
 {
+    for (int i=m_height-1; i>=0; i--)
+        for (int j=m_width-1; j>=0; j--)
+            delete mylabel[i][j];
+    delete m_cmap;
+    delete m_layout;
+    delete mbox;
     delete ui;
 }
 
@@ -62,28 +64,34 @@ void CMine::failed(){
 
 //no change size
 void CMine::clear(){
+    m_cmap->getNew(m_height,m_width,m_mine);
     for (int i=0; i<m_height; i++)
         for (int j=0; j<m_width; j++)
-        {
-            if (mybutton[i][j]->text()!="") mybutton[i][j]->setText("");
-            if (!mybutton[i][j]->isVisible()){
-                mybutton[i][j]->setVisible(true);
-                mybutton[i][j]->setEnabled(true);
-            }
-        }
+            mylabel[i][j]->setCovered();
     update();
-    start();
 
 }
 
-void CMine::unCover(int x,int y){
-    mybutton[x][y]->setVisible(false);
-    mybutton[x][y]->setEnabled(false);
+void CMine::unCover(const int x,const int y){
+    mylabel[x][y]->setValue(m_cmap->getValue(x,y));
     m_cmap->setCovered(x,y,OPEN);
-    if (m_cmap->getValue(x,y)==MINE) failed();
 }
 
-void CMine::SearchLeft(int x, int y)
+void CMine::SearchLeft(int x, int y){
+    qmtx->tryLock();
+    qmtx->lock();
+    if (m_cmap->getValue(x,y)==MINE){
+        unCover(x,y);
+        qmtx->unlock();
+        emit Failed();
+        return;
+    }
+    unCover(x,y);
+    Search(x,y);
+    qmtx->unlock();
+}
+
+void CMine::Search(int x, int y)
 {
     if (m_cmap->getCovered(x,y)==FLAG) return;
     int m[]={0,-1,1,0,0,-1,-1,1,1};
@@ -93,26 +101,20 @@ void CMine::SearchLeft(int x, int y)
 
     a[t]=x;
     b[t]=y;
-    while (h!=t)
+    while (h<t)
     {
         h=h+1;
         xx=m_cmap->getValue(a[h],b[h]);
-        //雷
-        if (xx==MINE)
-        {
-            unCover(a[h],b[h]);
-        }
-        else
-            //雷数
+        //雷数
             if ((xx>=1)&&(xx<=8))
             {
-                unCover(a[h],b[h]);
+                //unCover(a[h],b[h]);
             }
              else
              //无内容
              if (xx==BLANK)
              {
-                unCover(a[h],b[h]);
+                //unCover(a[h],b[h]);
                 for (i=1;i<=8;i++)
                     if (m_cmap->getCovered(a[h]+m[i],b[h]+n[i])==COVERED)
                     {
@@ -123,6 +125,7 @@ void CMine::SearchLeft(int x, int y)
                                 t=t+1;
                                 a[t]=a[h]+m[i];
                                 b[t]=b[h]+n[i];
+                                unCover(a[t],b[t]);
                             }
                     }
                 }
@@ -132,17 +135,23 @@ void CMine::SearchLeft(int x, int y)
 
 void CMine::SearchRight(int x, int y)
 {
+    qmtx->tryLock();
+    qmtx->lock();
+    if (m_cmap->getCovered(x,y)==OPEN) return;
     if (m_cmap->getCovered(x,y)==FLAG){
-        mybutton[x][y]->setText("");
+        mylabel[x][y]->setCovered();
         m_cmap->setCovered(x,y,COVERED);
     }else{
-        mybutton[x][y]->setText("F");
+        mylabel[x][y]->setFlag();
         m_cmap->setCovered(x,y,FLAG);
     }
+    qmtx->unlock();
 }
 
 void CMine::SearchDouble(int x, int y)
 {
+    qmtx->tryLock();
+    qmtx->lock();
     int m[]={0,-1,1,0,0,-1,-1,1,1};
     int n[]={0,0,0,-1,1,-1,1,-1,1};
     int i,g;
@@ -154,6 +163,17 @@ void CMine::SearchDouble(int x, int y)
     }
     if (g==m_cmap->getValue(x,y))
         for (i=1;i<=8;i++)
-            if (m_cmap->getCovered(x+m[i],y+n[i])!=FLAG)
-            SearchLeft(x+m[i],y+n[i]);
+        if (m_cmap->getCovered(x+m[i],y+n[i])!=FLAG && m_cmap->getValue(x+m[i],y+n[i])!=BOUNDARY){
+                if (m_cmap->getValue(x+m[i],y+n[i])==MINE){
+                    unCover(x+m[i],y+n[i]);
+                    emit Failed();
+                    qmtx->unlock();
+                    return;
+                }
+                else{
+                    unCover(x+m[i],y+n[i]);
+                    Search(x+m[i],y+n[i]);
+                }
+            }
+    qmtx->lock();
 }

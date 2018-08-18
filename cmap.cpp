@@ -13,25 +13,23 @@ void CMap::getNew(int height,int width,int minesum){
     init(height+2,width+2,minesum);
 };
 
-CMap::CMap(int height,int width,int minesum){getNew(height,width,minesum);}
-
-CMap::CMap(){getNew(HEIGHT-2,WIDTH-2,99);}
+CMap::CMap(int height=HEIGHT-2,int width=WIDTH-2,int minesum=99){getNew(height,width,minesum);}
 
 CMap::~CMap(){};
 
 int CMap::getValue(int x,int y){
+    if(x<-1 || x>=m_nHeight || y<-1 || y>=m_nWidth) return WRONG;
         return m_nData[x+1][y+1];
 }
 
 int CMap::getCovered(int x,int y){
+    if(x<-1 || x>=m_nHeight || y<-1 || y>=m_nWidth) return WRONG;
         return m_bData[x+1][y+1];
 }
 
 bool CMap::setValue(int x,int y,int value){
-        if (value>=-2 && value<=9){
-                m_nData[x+1][y+1]=value;
-                return true;
-        }else return false;
+    m_nData[x+1][y+1]=value;
+    return true;
 }
 
 bool CMap::setCovered(int x,int y,int covered){
@@ -40,10 +38,10 @@ bool CMap::setCovered(int x,int y,int covered){
 }
 
 void CMap::setBomb(int orderh, int orderw){
-     m_nData[orderh][orderw] = -1;
+     m_nData[orderh][orderw] = MINE;
      for (int height = orderh - 1; height <= orderh + 1; height ++){
          for (int width = orderw - 1; width <= orderw + 1; width ++){
-             if ((m_nData[height][width] != 9) && (m_nData[height][width] != -1))
+             if ((m_nData[height][width] != BOUNDARY) && (m_nData[height][width] != MINE))
              m_nData[height][width] ++;
          }
      }
@@ -55,12 +53,12 @@ void CMap::init(int Height, int Width, int MineSum){
     this->m_nWidth = Width;
      srand(time(NULL));
      for (int i = 0; i < Height; i ++){
-         m_nData[i][0] = 9;
-         m_nData[i][Width - 1] = 9;
+         m_nData[i][0] = BOUNDARY;
+         m_nData[i][Width - 1] = BOUNDARY;
      }
      for (int j = 0; j < Width; j ++){
-         m_nData[0][j] = 9;
-         m_nData[Height - 1][j] = 9;
+         m_nData[0][j] = BOUNDARY;
+         m_nData[Height - 1][j] = BOUNDARY;
      }
      int area = (Height - 2) * (Width - 2);
      for (int bomb = 0; bomb < MineSum; bomb ++){
@@ -75,12 +73,4 @@ void CMap::init(int Height, int Width, int MineSum){
          setBomb(orderh, orderw);
      }
      return ;
-}
-
-int CMap::getWidth(){
-    return m_nWidth;
-}
-
-int CMap::getHeight(){
-    return m_nHeight;
 }
