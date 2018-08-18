@@ -8,7 +8,7 @@
 #include "mylabel.h"
 #include "const.h"
 #include "cmap.h"
-#include <QMutex>
+#include <QTimer>
 
 namespace Ui {
     class CMine;
@@ -28,6 +28,7 @@ public slots:
     void SearchDouble(int x, int y);
     void failed();
     void success();
+    void addtime();
 
    // void DoubleClicked(int x,int y);
 signals:
@@ -40,6 +41,7 @@ private:
     void clear();
     void Search(int x, int y);
     bool getSuccess();
+    void initTime();
 
     Ui::CMine *ui;
     MyLabel* mylabel[HEIGHT-2][WIDTH-2];
@@ -48,7 +50,11 @@ private:
     QFont* m_qft;
     QLabel* label_mine;
     QLabel* label_minesum;
+    QLabel* label_time;
+    QLabel* label_timenum;
     QPixmap* pixmap_mine;
+    QPixmap* pixmap_time;
+    QTimer* qtimer;
     //QMutex* qmtx;
 
 
@@ -58,6 +64,7 @@ private:
     int m_height;
     int m_width;
     int m_mine;
+    int m_time;
     int nflag;
     int nopen;
 };

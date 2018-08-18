@@ -13,6 +13,7 @@ CMine::CMine(QWidget *parent) :
     m_width = 9;
     nflag=0;
     nopen=0;
+    m_time=0;
 
     m_layout=new QGridLayout();
 
@@ -23,16 +24,26 @@ CMine::CMine(QWidget *parent) :
 
     label_mine=new QLabel();
     label_minesum=new QLabel();
+    label_time=new QLabel();
+    label_timenum=new QLabel();
+
     pixmap_mine=new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/label_mine.png");
     label_mine->setPixmap(*pixmap_mine);
-
+    pixmap_time=new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/label_time.png");
+    label_time->setPixmap(*pixmap_time);
 
     m_qft=new QFont("Harrington", 15, QFont::Bold);
     label_minesum->setFont(*m_qft);
     label_minesum->setText(QString("%1").arg(m_mine));
+    label_timenum->setFont(*m_qft);
+    label_timenum->setText(QString("%1").arg(m_time));
 
     m_layout->addWidget(label_mine,0,0,2,2);
     m_layout->addWidget(label_minesum,0,2,2,2);
+    m_layout->addWidget(label_time,0,m_width-2,2,2);
+    m_layout->addWidget(label_timenum,0,m_width-4,2,2);
+
+    qtimer = new QTimer();
 
     for (int i=0; i<m_height; i++)
         for (int j=0; j<m_width; j++)
@@ -47,6 +58,7 @@ CMine::CMine(QWidget *parent) :
 
     connect(this,SIGNAL(Failed()),this,SLOT(failed()));
     connect(this,SIGNAL(Successed()),this,SLOT(success()));
+    connect(qtimer,SIGNAL(timeout()),this,SLOT(addtime()));
 
     m_layout->setSpacing(0);
 
@@ -87,6 +99,10 @@ void CMine::clear(){
     nflag=0;
     nopen=0;
     label_minesum->setText(QString("%1").arg(m_mine));
+
+    qtimer->stop();
+    m_time=0;
+    label_timenum->setText(QString("%1").arg(m_time));
     update();
 
 }
@@ -107,6 +123,7 @@ void CMine::SearchLeft(int x, int y){
         emit Failed();
         return;
     }
+    if (m_time==0) initTime();
     unCover(x,y);
     if (getSuccess()){
         emit Successed();
@@ -222,4 +239,13 @@ void CMine::SearchDouble(int x, int y)
 
 bool CMine::getSuccess(){
     return (nflag+nopen == m_height*m_width);
+}
+
+void CMine::initTime(){
+    qtimer->start(1000);
+}
+
+void CMine::addtime(){
+    m_time++;
+    label_timenum->setText(QString("%1").arg(m_time));
 }
