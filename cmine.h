@@ -47,6 +47,8 @@ private:
     QGridLayout* m_layout;
     QFont* m_qft;
     QLabel* label_mine;
+    QLabel* label_minesum;
+    QPixmap* pixmap_mine;
     //QMutex* qmtx;
 
 

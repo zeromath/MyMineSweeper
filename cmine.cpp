@@ -8,9 +8,9 @@ CMine::CMine(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_mine = 99;
-    m_height = HEIGHT-2;
-    m_width = WIDTH-2;
+    m_mine = 10;
+    m_height = 9;
+    m_width = 9;
     nflag=0;
     nopen=0;
 
@@ -22,22 +22,27 @@ CMine::CMine(QWidget *parent) :
     //qmtx=new QMutex(QMutex::Recursive);
 
     label_mine=new QLabel();
-    label_mine->setText(QString("the sum of mine is %1").arg(m_mine));
+    label_minesum=new QLabel();
+    pixmap_mine=new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/label_mine.png");
+    label_mine->setPixmap(*pixmap_mine);
 
-    m_qft=new QFont("Times", 10, QFont::Bold);
 
-    //m_layout->addWidget(label_mine,0,0,1,10);
+    m_qft=new QFont("Harrington", 15, QFont::Bold);
+    label_minesum->setFont(*m_qft);
+    label_minesum->setText(QString("%1").arg(m_mine));
+
+    m_layout->addWidget(label_mine,0,0,2,2);
+    m_layout->addWidget(label_minesum,0,2,2,2);
 
     for (int i=0; i<m_height; i++)
         for (int j=0; j<m_width; j++)
         {
             mylabel[i][j]=new MyLabel(i,j);
             mylabel[i][j]->setCovered();
-            mylabel[i][j]->setFont(*m_qft);
             connect(mylabel[i][j],SIGNAL(sLeftClicked(int,int)),this,SLOT(SearchLeft(int,int)));
             connect(mylabel[i][j],SIGNAL(sRightClicked(int,int)),this,SLOT(SearchRight(int,int)));
             connect(mylabel[i][j],SIGNAL(sDoubleClicked(int,int)),this,SLOT(SearchDouble(int,int)));
-            m_layout->addWidget(mylabel[i][j],i+1,j);
+            m_layout->addWidget(mylabel[i][j],i+2,j);
         }
 
     connect(this,SIGNAL(Failed()),this,SLOT(failed()));
@@ -81,6 +86,7 @@ void CMine::clear(){
             mylabel[i][j]->setCovered();
     nflag=0;
     nopen=0;
+    label_minesum->setText(QString("%1").arg(m_mine));
     update();
 
 }
@@ -165,11 +171,13 @@ void CMine::SearchRight(int x, int y)
         mylabel[x][y]->setCovered();
         m_cmap->setCovered(x,y,COVERED);
         nflag--;
+        label_minesum->setText(QString("%1").arg(m_mine-nflag));
 
     }else{
         mylabel[x][y]->setFlag();
         m_cmap->setCovered(x,y,FLAG);
         nflag++;
+        label_minesum->setText(QString("%1").arg(m_mine-nflag));
         if (getSuccess()){
             emit Successed();
             return;
