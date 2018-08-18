@@ -27,16 +27,19 @@ public slots:
     void SearchRight(int x, int y);
     void SearchDouble(int x, int y);
     void failed();
+    void success();
 
    // void DoubleClicked(int x,int y);
 signals:
     void Failed();
+    void Successed();
 
 private:
     void unCover(int x,int y);
     void start();
     void clear();
     void Search(int x, int y);
+    bool getSuccess();
 
     Ui::CMine *ui;
     MyLabel* mylabel[HEIGHT-2][WIDTH-2];
@@ -44,7 +47,7 @@ private:
     QGridLayout* m_layout;
     QFont* m_qft;
     QLabel* label_mine;
-    QMutex* qmtx;
+    //QMutex* qmtx;
 
 
     CMap* m_cmap;
@@ -53,6 +56,8 @@ private:
     int m_height;
     int m_width;
     int m_mine;
+    int nflag;
+    int nopen;
 };
 
 #endif // CMINE_H

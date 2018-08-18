@@ -10,7 +10,6 @@ private:
         int m_nData[HEIGHT][WIDTH];
         int m_bData[HEIGHT][WIDTH];
         int m_nMineSum;
-        int m_nFalg;
         int m_nWidth;
         int m_nHeight;
         void fillZero();

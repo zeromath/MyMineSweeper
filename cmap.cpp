@@ -35,6 +35,7 @@ bool CMap::setValue(int x,int y,int value){
 bool CMap::setCovered(int x,int y,int covered){
         m_bData[x+1][y+1]=covered;
         return true;
+
 }
 
 void CMap::setBomb(int orderh, int orderw){

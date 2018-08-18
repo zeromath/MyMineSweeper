@@ -11,21 +11,22 @@ CMine::CMine(QWidget *parent) :
     m_mine = 99;
     m_height = HEIGHT-2;
     m_width = WIDTH-2;
+    nflag=0;
+    nopen=0;
 
     m_layout=new QGridLayout();
-    m_layout->setSpacing(0);
 
     mbox=new QMessageBox();
     m_cmap=new CMap(m_height,m_width,m_mine);
 
-    qmtx=new QMutex(QMutex::Recursive);
+    //qmtx=new QMutex(QMutex::Recursive);
 
     label_mine=new QLabel();
     label_mine->setText(QString("the sum of mine is %1").arg(m_mine));
 
     m_qft=new QFont("Times", 10, QFont::Bold);
 
-    m_layout->addWidget(label_mine,0,0,1,10);
+    //m_layout->addWidget(label_mine,0,0,1,10);
 
     for (int i=0; i<m_height; i++)
         for (int j=0; j<m_width; j++)
@@ -40,8 +41,13 @@ CMine::CMine(QWidget *parent) :
         }
 
     connect(this,SIGNAL(Failed()),this,SLOT(failed()));
+    connect(this,SIGNAL(Successed()),this,SLOT(success()));
+
+    m_layout->setSpacing(0);
+
     ui->centralWidget->setLayout(m_layout);
     ui->centralWidget->show();
+
 
 }
 
@@ -62,33 +68,46 @@ void CMine::failed(){
     clear();
 }
 
+void CMine::success(){
+    mbox->setText("you win!!!");
+    mbox->exec();
+    clear();
+}
 //no change size
 void CMine::clear(){
     m_cmap->getNew(m_height,m_width,m_mine);
     for (int i=0; i<m_height; i++)
         for (int j=0; j<m_width; j++)
             mylabel[i][j]->setCovered();
+    nflag=0;
+    nopen=0;
     update();
 
 }
 
 void CMine::unCover(const int x,const int y){
+    if (m_cmap->getCovered(x,y)==OPEN) return;
+    nopen++;
     mylabel[x][y]->setValue(m_cmap->getValue(x,y));
     m_cmap->setCovered(x,y,OPEN);
 }
 
 void CMine::SearchLeft(int x, int y){
-    qmtx->tryLock();
-    qmtx->lock();
+    //qmtx->tryLock();
+    //qmtx->lock();
     if (m_cmap->getValue(x,y)==MINE){
         unCover(x,y);
-        qmtx->unlock();
+        //qmtx->unlock();
         emit Failed();
         return;
     }
     unCover(x,y);
+    if (getSuccess()){
+        emit Successed();
+        return;
+    }
     Search(x,y);
-    qmtx->unlock();
+    //qmtx->unlock();
 }
 
 void CMine::Search(int x, int y)
@@ -126,6 +145,10 @@ void CMine::Search(int x, int y)
                                 a[t]=a[h]+m[i];
                                 b[t]=b[h]+n[i];
                                 unCover(a[t],b[t]);
+                                if (getSuccess()){
+                                    emit Successed();
+                                    return;
+                                }
                             }
                     }
                 }
@@ -135,23 +158,30 @@ void CMine::Search(int x, int y)
 
 void CMine::SearchRight(int x, int y)
 {
-    qmtx->tryLock();
-    qmtx->lock();
+    //qmtx->tryLock();
+    //qmtx->lock();
     if (m_cmap->getCovered(x,y)==OPEN) return;
     if (m_cmap->getCovered(x,y)==FLAG){
         mylabel[x][y]->setCovered();
         m_cmap->setCovered(x,y,COVERED);
+        nflag--;
+
     }else{
         mylabel[x][y]->setFlag();
         m_cmap->setCovered(x,y,FLAG);
+        nflag++;
+        if (getSuccess()){
+            emit Successed();
+            return;
+        }
     }
-    qmtx->unlock();
+    //qmtx->unlock();
 }
 
 void CMine::SearchDouble(int x, int y)
 {
-    qmtx->tryLock();
-    qmtx->lock();
+    //qmtx->tryLock();
+    //qmtx->lock();
     int m[]={0,-1,1,0,0,-1,-1,1,1};
     int n[]={0,0,0,-1,1,-1,1,-1,1};
     int i,g;
@@ -167,13 +197,21 @@ void CMine::SearchDouble(int x, int y)
                 if (m_cmap->getValue(x+m[i],y+n[i])==MINE){
                     unCover(x+m[i],y+n[i]);
                     emit Failed();
-                    qmtx->unlock();
+                    //qmtx->unlock();
                     return;
                 }
                 else{
                     unCover(x+m[i],y+n[i]);
+                    if (getSuccess()){
+                        emit Successed();
+                        return;
+                    }
                     Search(x+m[i],y+n[i]);
                 }
             }
-    qmtx->lock();
+    //qmtx->lock();
+}
+
+bool CMine::getSuccess(){
+    return (nflag+nopen == m_height*m_width);
 }
