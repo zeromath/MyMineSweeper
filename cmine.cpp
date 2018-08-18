@@ -2,6 +2,23 @@
 #include "ui_cmine.h"
 
 
+void CMine::init(){
+
+    m_layout->addWidget(label_mine,0,0,2,2);
+    m_layout->addWidget(label_minesum,0,2,2,2);
+    m_layout->addWidget(label_time,0,m_width-2,2,2);
+    m_layout->addWidget(label_timenum,0,m_width-4,2,2);
+
+    for (int i=0;i<m_height;i++)
+        for (int j=0;j<m_width;j++){
+            mylabel[i][j]->setCovered();
+            m_layout->addWidget(mylabel[i][j],i+2,j);
+        }
+
+    m_layout->setSpacing(0);
+
+}
+
 CMine::CMine(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::CMine)
@@ -15,21 +32,23 @@ CMine::CMine(QWidget *parent) :
     nopen=0;
     m_time=0;
 
-    m_layout=new QGridLayout();
+
+    m_layout=new QGridLayout(this);
 
     mbox=new QMessageBox();
+    dialog_mydlg=new MyDlg();
     m_cmap=new CMap(m_height,m_width,m_mine);
 
     //qmtx=new QMutex(QMutex::Recursive);
 
-    label_mine=new QLabel();
-    label_minesum=new QLabel();
-    label_time=new QLabel();
-    label_timenum=new QLabel();
+    label_mine=new MyLabelEx();
+    label_minesum=new QLabel(); label_minesum->setFixedSize(26,26);
+    label_time=new MyLabelEx();
+    label_timenum=new QLabel(); label_timenum->setFixedSize(26,26);
 
-    pixmap_mine=new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/label_mine.png");
+    pixmap_mine=new QPixmap(":/images/label_mine.png");
     label_mine->setPixmap(*pixmap_mine);
-    pixmap_time=new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/label_time.png");
+    pixmap_time=new QPixmap(":/images/label_time.png");
     label_time->setPixmap(*pixmap_time);
 
     m_qft=new QFont("Harrington", 15, QFont::Bold);
@@ -38,33 +57,30 @@ CMine::CMine(QWidget *parent) :
     label_timenum->setFont(*m_qft);
     label_timenum->setText(QString("%1").arg(m_time));
 
-    m_layout->addWidget(label_mine,0,0,2,2);
-    m_layout->addWidget(label_minesum,0,2,2,2);
-    m_layout->addWidget(label_time,0,m_width-2,2,2);
-    m_layout->addWidget(label_timenum,0,m_width-4,2,2);
-
     qtimer = new QTimer();
 
-    for (int i=0; i<m_height; i++)
-        for (int j=0; j<m_width; j++)
+    for (int i=0; i<HEIGHT-2; i++)
+        for (int j=0; j<WIDTH-2; j++)
         {
             mylabel[i][j]=new MyLabel(i,j);
-            mylabel[i][j]->setCovered();
             connect(mylabel[i][j],SIGNAL(sLeftClicked(int,int)),this,SLOT(SearchLeft(int,int)));
             connect(mylabel[i][j],SIGNAL(sRightClicked(int,int)),this,SLOT(SearchRight(int,int)));
             connect(mylabel[i][j],SIGNAL(sDoubleClicked(int,int)),this,SLOT(SearchDouble(int,int)));
-            m_layout->addWidget(mylabel[i][j],i+2,j);
         }
 
     connect(this,SIGNAL(Failed()),this,SLOT(failed()));
     connect(this,SIGNAL(Successed()),this,SLOT(success()));
     connect(qtimer,SIGNAL(timeout()),this,SLOT(addtime()));
+    connect(label_mine,SIGNAL(sClicked()),dialog_mydlg,SLOT(exec()));
+    connect(label_time,SIGNAL(sClicked()),this,SLOT(restart()));
+    connect(dialog_mydlg,SIGNAL(setNew(int,int,int)),this,SLOT(setNew(int,int,int)));
 
-    m_layout->setSpacing(0);
+    init();
 
     ui->centralWidget->setLayout(m_layout);
+    ui->centralWidget->setFixedSize(m_width*18,m_height*18+26);
+    setFixedSize(m_width*18,m_height*18+26);
     ui->centralWidget->show();
-
 
 }
 
@@ -80,12 +96,46 @@ CMine::~CMine()
 }
 
 void CMine::failed(){
+    qtimer->stop();
     mbox->setText("you falied");
     mbox->exec();
     clear();
 }
 
+void CMine::restart(){
+    qtimer->stop();
+    clear();
+}
+
+void CMine::setNew(int height,int width,int mine){
+    m_layout->removeWidget(label_mine);
+    m_layout->removeWidget(label_minesum);
+    m_layout->removeWidget(label_time);
+    m_layout->removeWidget(label_timenum);
+
+    for (int i=0;i<m_height;i++)
+        for (int j=0;j<m_width;j++)
+            m_layout->removeWidget(mylabel[i][j]);
+
+
+    m_height=height;
+    m_width=width;
+    m_mine=mine;
+
+    init();
+
+    ui->centralWidget->setFixedSize(m_width*18,m_height*18+26);
+    setFixedSize(m_width*18,m_height*18+26);
+
+    ui->centralWidget->update();
+    ui->centralWidget->repaint();
+
+    qtimer->stop();
+    clear();
+}
+
 void CMine::success(){
+    qtimer->stop();
     mbox->setText("you win!!!");
     mbox->exec();
     clear();
@@ -100,7 +150,6 @@ void CMine::clear(){
     nopen=0;
     label_minesum->setText(QString("%1").arg(m_mine));
 
-    qtimer->stop();
     m_time=0;
     label_timenum->setText(QString("%1").arg(m_time));
     update();
@@ -117,6 +166,7 @@ void CMine::unCover(const int x,const int y){
 void CMine::SearchLeft(int x, int y){
     //qmtx->tryLock();
     //qmtx->lock();
+    if (m_cmap->getCovered(x,y)==FLAG) return;
     if (m_cmap->getValue(x,y)==MINE){
         unCover(x,y);
         //qmtx->unlock();
@@ -178,7 +228,6 @@ void CMine::Search(int x, int y)
        }
 }
 
-
 void CMine::SearchRight(int x, int y)
 {
     //qmtx->tryLock();
@@ -191,6 +240,7 @@ void CMine::SearchRight(int x, int y)
         label_minesum->setText(QString("%1").arg(m_mine-nflag));
 
     }else{
+        if (nflag >= m_mine) return;
         mylabel[x][y]->setFlag();
         m_cmap->setCovered(x,y,FLAG);
         nflag++;

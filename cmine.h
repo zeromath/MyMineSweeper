@@ -5,10 +5,13 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QTimer>
 #include "mylabel.h"
+#include "mylabelex.h"
 #include "const.h"
 #include "cmap.h"
-#include <QTimer>
+#include "mydlg.h"
+
 
 namespace Ui {
     class CMine;
@@ -29,6 +32,8 @@ public slots:
     void failed();
     void success();
     void addtime();
+    void restart();
+    void setNew(int height,int width,int mine);
 
    // void DoubleClicked(int x,int y);
 signals:
@@ -42,16 +47,18 @@ private:
     void Search(int x, int y);
     bool getSuccess();
     void initTime();
+    void init();
 
     Ui::CMine *ui;
     MyLabel* mylabel[HEIGHT-2][WIDTH-2];
     QMessageBox* mbox;
     QGridLayout* m_layout;
     QFont* m_qft;
-    QLabel* label_mine;
-    QLabel* label_minesum;
-    QLabel* label_time;
-    QLabel* label_timenum;
+    MyLabelEx *label_mine;
+    MyLabelEx *label_time;
+    MyDlg* dialog_mydlg;
+    QLabel *label_minesum;
+    QLabel *label_timenum;
     QPixmap* pixmap_mine;
     QPixmap* pixmap_time;
     QTimer* qtimer;

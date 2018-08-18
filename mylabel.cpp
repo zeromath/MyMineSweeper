@@ -9,18 +9,18 @@ MyLabel::MyLabel(int x,int y)
     this->setFrameStyle(6);
 
     pixmap = new QPixmap*[12];
-    pixmap[0] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/blank.png");
-    pixmap[1] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/1.png");
-    pixmap[2] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/2.png");
-    pixmap[3] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/3.png");
-    pixmap[4] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/4.png");
-    pixmap[5] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/5.png");
-    pixmap[6] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/6.png");
-    pixmap[7] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/7.png");
-    pixmap[8] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/8.png");
-    pixmap[9] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/mine.png");
-    pixmap[10] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/covered.png");
-    pixmap[11] = new QPixmap("C:/Qt/2010.05/qt/MyMineSweeper/flag.png");
+    pixmap[0] = new QPixmap(":/images/blank.png");
+    pixmap[1] = new QPixmap(":/images/1.png");
+    pixmap[2] = new QPixmap(":/images/2.png");
+    pixmap[3] = new QPixmap(":/images/3.png");
+    pixmap[4] = new QPixmap(":/images/4.png");
+    pixmap[5] = new QPixmap(":/images/5.png");
+    pixmap[6] = new QPixmap(":/images/6.png");
+    pixmap[7] = new QPixmap(":/images/7.png");
+    pixmap[8] = new QPixmap(":/images/8.png");
+    pixmap[9] = new QPixmap(":/images/mine.png");
+    pixmap[10] = new QPixmap(":/images/covered.png");
+    pixmap[11] = new QPixmap(":/images/flag.png");
 }
 
 MyLabel::~MyLabel(){
